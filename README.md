@@ -103,6 +103,28 @@ State is shared through **file-scoped globals**, not parameters: the phoneme arr
 `A`/`X`/`Y` registers live in `sam.c`; `buffer`/`bufferpos` are accessed via `GetBuffer()`/
 `GetBufferLength()`. `debug` and `dumpstages` are globals defined in `main.c` and `extern`'d elsewhere.
 
+## pysamtts stage dumps
+
+The `pysamtts` branch adds golden-fixture instrumentation so a Python port can be validated
+byte-for-byte against the C reference. This is separate from `-debug` (which is verbose, human-
+oriented, and — in SDL builds — blocks playing the whole sentence). The `-dump-*` flags
+(`-dump-reciter`, `-dump-parser1`, `-dump-rewrite`, `-dump-adjust`, `-dump-final`, `-dump-prepare`,
+`-dump-frames`, `-dump-all`) set bits in `dumpstages` and emit clean, parseable sections to stdout:
+
+```
+@@STAGE <name>
+# <column header>
+<rows of space-separated integers, or the raw reciter string>
+@@END <name>
+```
+
+Any `-dump-*` flag **suppresses audio entirely** and short-circuits rendering after the frame
+tables (`render.c` returns before `ProcessFrames`; `main.c` skips SDL init). End-to-end PCM golds
+are captured separately via a plain `-wav` run. The dump functions live in `debug.c`/`debug.h`;
+the stage bitmasks (`DUMP_RECITER` … `DUMP_ALL`) and the rationale are documented in `debug.h`.
+When adding a new pipeline stage that the port must match, add a matching `Dump*` call at that
+point and a bit in `debug.h`.
+
 ## Adaption To C
 
 This program (disassembly at http://hitmen.c02.at/html/tools_sam.html) was converted semi-automatic by [Sebastian Macke](https://github.com/s-macke) into C by converting each assembler opcode.
