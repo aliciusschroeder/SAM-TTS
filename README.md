@@ -74,8 +74,36 @@ A description of additional features can be found in the manual of the equivalen
 	http://www.apple-iigs.info/newdoc/sam.pdf
 
 
-Adaption To C
-=============
+## Pipeline architecture
+
+A run flows text → phonemes → timed phoneme list → frame tables → PCM samples, across three
+translation units. `main.c` parses argv, uppercases input, appends the `[` / `0x9B`
+end-of-text marker, then calls into the library.
+
+1. **Reciter** (`reciter.c`, `ReciterTabs.h`) — `TextToPhonemes()` rewrites English text into a
+   phonetic string using a rule table. Rules match on surrounding letters with class wildcards
+   (`#` vowel, `&`/`@`/`^`/`+`/`:`/`%` consonant classes). Skipped in `-phonetic` mode.
+
+2. **SAM** (`sam.c`, `SamTabs.h`) — `SAMMain()` is the orchestrator. It runs, in order:
+   `Parser1()` (phoneme string → parallel `phonemeindex[]` / `stress[]` / `phonemeLength[]`
+   arrays, 255-terminated) → `Parser2()` (phoneme rewrite rules) → `CopyStress()` →
+   `SetPhonemeLength()` → `AdjustLengths()` → `Code41240()` (insert extra phonemes) →
+   `InsertBreath()` → `PrepareOutput()` (compacts into the 60-slot `*Output[]` arrays and calls
+   `Render()`). Phonemes are referenced everywhere by **integer index** into the sign tables;
+   `flags[]`/`flags2[]` bitmasks in `SamTabs.h` classify them (vowel, consonant, voiced, nasal,
+   diphthong, etc.) and drive nearly every rule.
+
+3. **Render** (`render.c`, `RenderTabs.h`) — `Render()` expands the phoneme list into 256
+   per-10ms frames of formant data (`frequency1..3`, `amplitude1..3`, `pitches`, plus a
+   sampled-consonant flag), interpolates transitions, then `ProcessFrames()` synthesizes 8-bit
+   samples into the global `buffer`. `SetMouthThroat()` applies the `-mouth`/`-throat` knobs by
+   remapping the formant tables. `main.c` then either plays `buffer` via SDL or writes it as wav.
+
+State is shared through **file-scoped globals**, not parameters: the phoneme arrays and the
+`A`/`X`/`Y` registers live in `sam.c`; `buffer`/`bufferpos` are accessed via `GetBuffer()`/
+`GetBufferLength()`. `debug` and `dumpstages` are globals defined in `main.c` and `extern`'d elsewhere.
+
+## Adaption To C
 
 This program (disassembly at http://hitmen.c02.at/html/tools_sam.html) was converted semi-automatic by [Sebastian Macke](https://github.com/s-macke) into C by converting each assembler opcode.
 e. g. 
