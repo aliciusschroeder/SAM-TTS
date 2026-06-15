@@ -1,0 +1,1746 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "sam",
+    "languages": [
+      "c",
+      "json",
+      "markdown",
+      "batch",
+      "txt"
+    ],
+    "frameworks": [],
+    "description": "SAM (Software Automatic Mouth), a tiny C text-to-speech synthesizer ported from the 1982 Commodore C64 program. Pipeline: English text to phonemes (reciter) to a timed phoneme list (sam) to formant frames and 8-bit PCM (render), output via SDL or WAV. Unified CMake/vcpkg build; the pysamtts branch adds stage-dump instrumentation for a planned Python port.",
+    "analyzedAt": "2026-06-15T21:21:00.288Z",
+    "gitCommitHash": "a2d5bab6d976cafce86a23fe278913c41e840479"
+  },
+  "nodes": [
+    {
+      "id": "file:src/SamTabs.h",
+      "type": "file",
+      "name": "SamTabs.h",
+      "filePath": "src/SamTabs.h",
+      "summary": "Static lookup tables for the SAM phoneme stage: stress/sign input tables, phoneme flag bitmasks (flags[]/flags2[]) classifying phonemes as vowel/consonant/voiced/nasal/diphthong, plus default phoneme length, stress, and Parser2 rewrite-rule tables.",
+      "tags": [
+        "data-model",
+        "lookup-table",
+        "phoneme",
+        "type-definition"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Header of const array tables ported from the original 6502 ROM tables; comments preserve the original assembly addresses (e.g. tab40672)."
+    },
+    {
+      "id": "file:src/main.c",
+      "type": "file",
+      "name": "main.c",
+      "filePath": "src/main.c",
+      "summary": "Program entry point and CLI front end: parses argv (-wav, -phonetic, -sing, -pitch/-speed/-mouth/-throat knobs, -debug, -dump-* flags), uppercases and terminates the input, runs the reciter and SAM pipeline, then plays the PCM buffer via SDL or writes it to an 8-bit 22050 Hz mono WAV.",
+      "tags": [
+        "entry-point",
+        "cli",
+        "audio-output",
+        "wav"
+      ],
+      "complexity": "complex",
+      "languageNotes": "SDL audio callback (MixAudio) and OutputSound are #ifdef USESDL guarded, with a no-op OutputSound fallback for wav-only builds."
+    },
+    {
+      "id": "file:src/sam.c",
+      "type": "file",
+      "name": "sam.c",
+      "filePath": "src/sam.c",
+      "summary": "Core SAM orchestrator that turns a phoneme string into a timed phoneme list ready for rendering: SAMMain() runs Parser1, Parser2, CopyStress, SetPhonemeLength, AdjustLengths, Code41240, InsertBreath and PrepareOutput in sequence, sharing state through file-scoped phonemeindex/stress/length arrays.",
+      "tags": [
+        "service",
+        "pipeline",
+        "phoneme",
+        "parser"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Opcode-by-opcode 6502 port: file-scoped A/X/Y registers, numbered helpers (Code41240, Code47503), mem* scratch variables, and goto-driven rule loops; phonemes referenced by integer index into the SamTabs.h sign tables."
+    },
+    {
+      "id": "file:src/sam.h",
+      "type": "file",
+      "name": "sam.h",
+      "filePath": "src/sam.h",
+      "summary": "Public interface for the SAM stage, declaring the parameter setters (SetInput/SetSpeed/SetPitch/SetMouth/SetThroat/EnableSingmode/EnableDebug), the SAMMain() entry, and the GetBuffer/GetBufferLength accessors used to retrieve synthesized PCM.",
+      "tags": [
+        "type-definition",
+        "api",
+        "phoneme"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/main.c:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "src/main.c",
+      "lineRange": [
+        165,
+        318
+      ],
+      "summary": "CLI entry point: parses all command-line flags, builds the input string, optionally runs the reciter (TextToPhonemes) unless -phonetic, then initializes SDL and drives SAMMain followed by WAV output or live playback.",
+      "tags": [
+        "entry-point",
+        "cli",
+        "argument-parsing"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/main.c:WriteWav",
+      "type": "function",
+      "name": "WriteWav",
+      "filePath": "src/main.c",
+      "lineRange": [
+        15,
+        47
+      ],
+      "summary": "Writes the synthesized sample buffer to disk as an 8-bit 22050 Hz mono PCM WAV file, emitting the RIFF/WAVE header fields manually before the sample data.",
+      "tags": [
+        "serialization",
+        "wav",
+        "audio-output"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main.c:PrintUsage",
+      "type": "function",
+      "name": "PrintUsage",
+      "filePath": "src/main.c",
+      "lineRange": [
+        49,
+        103
+      ],
+      "summary": "Prints the command-line usage banner describing all supported flags and example invocations.",
+      "tags": [
+        "cli",
+        "help",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/main.c:OutputSound",
+      "type": "function",
+      "name": "OutputSound",
+      "filePath": "src/main.c",
+      "lineRange": [
+        123,
+        151
+      ],
+      "summary": "Opens the SDL audio device with a MixAudio callback and blocks until the whole sample buffer has been played; compiled to a no-op when SDL is disabled.",
+      "tags": [
+        "audio-output",
+        "sdl",
+        "playback"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Guarded by #ifdef USESDL with an empty fallback definition for -DUSE_SDL=OFF builds."
+    },
+    {
+      "id": "function:src/sam.c:SAMMain",
+      "type": "function",
+      "name": "SAMMain",
+      "filePath": "src/sam.c",
+      "lineRange": [
+        139,
+        183
+      ],
+      "summary": "Orchestrates the SAM stage, running Init then the full phoneme-processing pipeline (Parser1, Parser2, CopyStress, SetPhonemeLength, AdjustLengths, Code41240, InsertBreath, PrepareOutput) and emitting stage dumps along the way.",
+      "tags": [
+        "service",
+        "pipeline",
+        "orchestrator"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/sam.c:Parser1",
+      "type": "function",
+      "name": "Parser1",
+      "filePath": "src/sam.c",
+      "lineRange": [
+        410,
+        533
+      ],
+      "summary": "Tokenizes the phonetic input string into parallel phonemeindex[], stress[] and phonemeLength[] arrays (255-terminated), matching one- and two-character phoneme signs against the SamTabs sign tables.",
+      "tags": [
+        "parser",
+        "phoneme",
+        "tokenization"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/sam.c:Parser2",
+      "type": "function",
+      "name": "Parser2",
+      "filePath": "src/sam.c",
+      "lineRange": [
+        627,
+        1061
+      ],
+      "summary": "Applies the large set of phoneme rewrite rules (allophone selection, stress propagation, contextual substitutions) over the phonemeindex/stress arrays using the flag bitmasks from SamTabs.h.",
+      "tags": [
+        "parser",
+        "phoneme",
+        "rewrite-rules"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/sam.c:AdjustLengths",
+      "type": "function",
+      "name": "AdjustLengths",
+      "filePath": "src/sam.c",
+      "lineRange": [
+        1076,
+        1430
+      ],
+      "summary": "Adjusts per-phoneme durations based on stress and neighboring phoneme classes, shortening or lengthening phonemes around vowels, plosives, and word boundaries to produce natural timing.",
+      "tags": [
+        "phoneme",
+        "timing",
+        "duration"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/sam.c:PrepareOutput",
+      "type": "function",
+      "name": "PrepareOutput",
+      "filePath": "src/sam.c",
+      "lineRange": [
+        187,
+        233
+      ],
+      "summary": "Compacts the processed phoneme arrays into the 60-slot Output[] buffers and calls Render() to synthesize PCM samples, short-circuiting before rendering in stage-dump mode.",
+      "tags": [
+        "pipeline",
+        "phoneme",
+        "rendering"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/sam.c:InsertBreath",
+      "type": "function",
+      "name": "InsertBreath",
+      "filePath": "src/sam.c",
+      "lineRange": [
+        236,
+        283
+      ],
+      "summary": "Scans the phoneme list and inserts breath (silence) phonemes at appropriate intervals so long utterances include natural pauses.",
+      "tags": [
+        "phoneme",
+        "post-processing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/sam.c:CopyStress",
+      "type": "function",
+      "name": "CopyStress",
+      "filePath": "src/sam.c",
+      "lineRange": [
+        300,
+        339
+      ],
+      "summary": "Propagates stress values from stressed vowels onto adjacent voiced consonants within the phoneme list.",
+      "tags": [
+        "phoneme",
+        "stress",
+        "post-processing"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/sam.c:Init",
+      "type": "function",
+      "name": "Init",
+      "filePath": "src/sam.c",
+      "lineRange": [
+        89,
+        135
+      ],
+      "summary": "Initializes SAM state before synthesis: applies the mouth/throat formant remapping (SetMouthThroat), allocates the sample buffer, and clears the phoneme working arrays.",
+      "tags": [
+        "initialization",
+        "setup"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/sam.c:Code41240",
+      "type": "function",
+      "name": "Code41240",
+      "filePath": "src/sam.c",
+      "lineRange": [
+        560,
+        599
+      ],
+      "summary": "Inserts extra transition phonemes between certain phoneme pairs (a numbered 6502-port helper) to smooth allophone boundaries.",
+      "tags": [
+        "phoneme",
+        "post-processing",
+        "legacy-port"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/sam.c:SetPhonemeLength",
+      "type": "function",
+      "name": "SetPhonemeLength",
+      "filePath": "src/sam.c",
+      "lineRange": [
+        540,
+        557
+      ],
+      "summary": "Assigns each phoneme its base duration from the default-length tables, choosing the stressed or unstressed value based on the phoneme's stress.",
+      "tags": [
+        "phoneme",
+        "timing",
+        "duration"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/sam.c:Insert",
+      "type": "function",
+      "name": "Insert",
+      "filePath": "src/sam.c",
+      "lineRange": [
+        343,
+        357
+      ],
+      "summary": "Inserts a phoneme (index, length and stress) at a given position by shifting the trailing entries of the parallel phoneme arrays down one slot.",
+      "tags": [
+        "phoneme",
+        "utility",
+        "array-manipulation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/sam.c:SetInput",
+      "type": "function",
+      "name": "SetInput",
+      "filePath": "src/sam.c",
+      "lineRange": [
+        49,
+        57
+      ],
+      "summary": "Copies the caller-provided phonetic input string into SAM's internal input buffer for processing.",
+      "tags": [
+        "setter",
+        "input",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/ReciterTabs.h",
+      "type": "file",
+      "name": "ReciterTabs.h",
+      "filePath": "src/ReciterTabs.h",
+      "summary": "Static data tables backing the Reciter stage: a per-character flag/classification table and the large English text-to-phoneme rule set (with separate rule tables for words beginning with each consonant letter). Consumed exclusively by reciter.c.",
+      "tags": [
+        "data-model",
+        "type-definition",
+        "lookup-table",
+        "phoneme-rules",
+        "reciter"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Rule entries are byte arrays where the final byte of each rule is OR'd with 0x80 (high-bit terminator), a 6502-era encoding preserved verbatim from the original C64 program."
+    },
+    {
+      "id": "file:src/reciter.c",
+      "type": "file",
+      "name": "reciter.c",
+      "filePath": "src/reciter.c",
+      "summary": "Implements the Reciter stage via TextToPhonemes(), which rewrites English text into a phonetic string by matching surrounding-letter rules with class wildcards (#/&/@/^/+/:/%). This is the first pipeline stage and is skipped in -phonetic mode.",
+      "tags": [
+        "text-processing",
+        "phoneme-rules",
+        "reciter",
+        "rule-engine",
+        "entry-point"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Direct opcode-by-opcode port of 6502 assembly: file-scoped A/X/Y register globals, goto-driven control flow, and numbered helpers (Code37055/Code37066) reproduce the original carry/wraparound semantics."
+    },
+    {
+      "id": "file:src/reciter.h",
+      "type": "file",
+      "name": "reciter.h",
+      "filePath": "src/reciter.h",
+      "summary": "Public header for the Reciter stage, declaring the single entry point TextToPhonemes() used by main.c to convert input text to phonemes.",
+      "tags": [
+        "type-definition",
+        "public-api",
+        "reciter",
+        "header"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/reciter.c:TextToPhonemes",
+      "type": "function",
+      "name": "TextToPhonemes",
+      "filePath": "src/reciter.c",
+      "lineRange": [
+        44,
+        551
+      ],
+      "summary": "Core Reciter routine: scans the uppercased input character by character, classifies each via the flag table, and applies the rule set to rewrite English letters into a SAM phonetic string, handling punctuation and word boundaries.",
+      "tags": [
+        "text-processing",
+        "rule-engine",
+        "phoneme-rules",
+        "reciter",
+        "core-logic"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Dominated by goto-based dispatch over rule classes; the entire function spans ~500 lines mirroring the original assembly's branch structure."
+    },
+    {
+      "id": "function:src/reciter.c:GetRuleByte",
+      "type": "function",
+      "name": "GetRuleByte",
+      "filePath": "src/reciter.c",
+      "lineRange": [
+        31,
+        42
+      ],
+      "summary": "Fetches a single byte from one of the rule tables given a base offset and index, selecting between the generic rules array and the per-letter rule sub-tables.",
+      "tags": [
+        "utility",
+        "lookup-table",
+        "phoneme-rules",
+        "reciter"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/reciter.c:Code37055",
+      "type": "function",
+      "name": "Code37055",
+      "filePath": "src/reciter.c",
+      "lineRange": [
+        12,
+        20
+      ],
+      "summary": "Numbered helper that tests the character at a given position against a class flag bitmask from the Reciter flag table, used to evaluate rule wildcards.",
+      "tags": [
+        "utility",
+        "classification",
+        "reciter",
+        "bitmask"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/reciter.c:Code37066",
+      "type": "function",
+      "name": "Code37066",
+      "filePath": "src/reciter.c",
+      "lineRange": [
+        22,
+        29
+      ],
+      "summary": "Numbered helper mirroring Code37055 for the reverse-direction (right-context) rule scan, testing a character's class flags against a bitmask.",
+      "tags": [
+        "utility",
+        "classification",
+        "reciter",
+        "bitmask"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/RenderTabs.h",
+      "type": "file",
+      "name": "RenderTabs.h",
+      "filePath": "src/RenderTabs.h",
+      "summary": "Static lookup tables for the render stage: per-phoneme formant frequency/amplitude curves, sine and sample-rate tables, and the multiplication/blend tables used by ProcessFrames to synthesize 8-bit PCM samples.",
+      "tags": [
+        "data-table",
+        "render",
+        "formant",
+        "lookup-table",
+        "synthesis"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Header consisting almost entirely of file-scoped static unsigned-char arrays; ported verbatim from the C64 ROM data tables, so values are magic constants matched byte-for-byte against the original."
+    },
+    {
+      "id": "file:src/render.c",
+      "type": "file",
+      "name": "render.c",
+      "filePath": "src/render.c",
+      "summary": "Render stage of the SAM pipeline: expands the timed phoneme list into 256 per-10ms frames of formant data, interpolates transitions, and synthesizes 8-bit PCM samples into the global buffer; also implements SetMouthThroat formant remapping and AddInflection pitch contouring.",
+      "tags": [
+        "render",
+        "dsp",
+        "synthesis",
+        "formant",
+        "audio"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Low-level 6502-port style: file-scoped A/X/Y-like registers, goto-driven loops, numbered scratch globals (mem*), and Read/Write helpers indexing parallel frame arrays. Match this style when editing."
+    },
+    {
+      "id": "file:src/render.h",
+      "type": "file",
+      "name": "render.h",
+      "filePath": "src/render.h",
+      "summary": "Public header for the render stage, declaring the two entry points consumed by the SAM orchestrator: Render() (phoneme list to PCM) and SetMouthThroat() (apply the -mouth/-throat formant knobs).",
+      "tags": [
+        "header",
+        "interface",
+        "render",
+        "api"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/render.c:Render",
+      "type": "function",
+      "name": "Render",
+      "filePath": "src/render.c",
+      "lineRange": [
+        360,
+        954
+      ],
+      "summary": "Core render driver: builds the 256-frame formant/pitch/amplitude tables from the compacted phoneme output, applies inflection and transition interpolation, then calls ProcessFrames to emit 8-bit PCM samples (short-circuiting before synthesis when frame dumps are requested).",
+      "tags": [
+        "render",
+        "dsp",
+        "entry-point",
+        "interpolation",
+        "synthesis"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/render.c:RenderSample",
+      "type": "function",
+      "name": "RenderSample",
+      "filePath": "src/render.c",
+      "lineRange": [
+        189,
+        339
+      ],
+      "summary": "Synthesizes sampled (unvoiced/plosive) consonants by reading the sampled-consonant tables and emitting 8-bit output bytes, branching on the sample type to produce noise bursts and stop-consonant transients.",
+      "tags": [
+        "render",
+        "dsp",
+        "synthesis",
+        "consonant",
+        "sampling"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/render.c:SetMouthThroat",
+      "type": "function",
+      "name": "SetMouthThroat",
+      "filePath": "src/render.c",
+      "lineRange": [
+        1010,
+        1071
+      ],
+      "summary": "Applies the -mouth and -throat knobs by remapping the formant 1 and 2 frequency tables, scaling each phoneme's nominal formant frequencies via the trans multiply helper.",
+      "tags": [
+        "render",
+        "formant",
+        "configuration",
+        "entry-point",
+        "tuning"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/render.c:AddInflection",
+      "type": "function",
+      "name": "AddInflection",
+      "filePath": "src/render.c",
+      "lineRange": [
+        961,
+        1003
+      ],
+      "summary": "Applies a rising or falling pitch inflection over a span of frames, ramping the pitch values around a phoneme boundary to produce natural sentence intonation.",
+      "tags": [
+        "render",
+        "pitch",
+        "intonation",
+        "dsp"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/render.c:trans",
+      "type": "function",
+      "name": "trans",
+      "filePath": "src/render.c",
+      "lineRange": [
+        1075,
+        1116
+      ],
+      "summary": "8-bit by 8-bit multiply helper returning the high byte of the product, reproducing the 6502 multiplication routine used by SetMouthThroat to scale formant frequencies.",
+      "tags": [
+        "render",
+        "utility",
+        "arithmetic",
+        "formant"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/render.c:Read",
+      "type": "function",
+      "name": "Read",
+      "filePath": "src/render.c",
+      "lineRange": [
+        99,
+        113
+      ],
+      "summary": "Indexed accessor that reads a value from one of the parallel frame tables (frequency/amplitude/pitch) selected by a table id, with optional debug tracing.",
+      "tags": [
+        "render",
+        "utility",
+        "accessor",
+        "frame-table"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/render.c:Write",
+      "type": "function",
+      "name": "Write",
+      "filePath": "src/render.c",
+      "lineRange": [
+        115,
+        129
+      ],
+      "summary": "Indexed mutator that writes a value into one of the parallel frame tables selected by a table id, with optional debug tracing.",
+      "tags": [
+        "render",
+        "utility",
+        "accessor",
+        "frame-table"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:CLAUDE.md",
+      "type": "document",
+      "name": "CLAUDE.md",
+      "filePath": "CLAUDE.md",
+      "summary": "Repository guidance for Claude Code, documenting what SAM is, the CMake/vcpkg build commands, the three-stage text-to-phonemes-to-PCM pipeline architecture (reciter.c, sam.c, render.c), and the pysamtts branch's stage-dump instrumentation for validating a planned Python port.",
+      "tags": [
+        "documentation",
+        "build-system",
+        "architecture",
+        "development"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Five top-level sections covering project overview, build/run, pipeline architecture, and stage dumps."
+    },
+    {
+      "id": "document:CMakeLists.txt",
+      "type": "document",
+      "name": "CMakeLists.txt",
+      "filePath": "CMakeLists.txt",
+      "summary": "Unified CMake build definition for the sam C executable; compiles the five core source files, conditionally links SDL2 for live audio via the USE_SDL option, matches the static MSVC runtime for the x64-windows-static vcpkg triplet, and copies the built binary to dist/ in a POST_BUILD step.",
+      "tags": [
+        "build-system",
+        "configuration",
+        "infrastructure",
+        "cmake"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Uses CMake generator expressions to apply compiler-specific warning flags and conditional definitions across MSVC/GNU/Clang."
+    },
+    {
+      "id": "config:CMakePresets.json",
+      "type": "config",
+      "name": "CMakePresets.json",
+      "filePath": "CMakePresets.json",
+      "summary": "CMake presets defining the windows and linux configure/build presets, wiring the vcpkg toolchain and selecting the x64-windows-static triplet for the Windows build.",
+      "tags": [
+        "configuration",
+        "build-system",
+        "cmake",
+        "vcpkg"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Project readme introducing SAM as a tiny C text-to-speech synthesizer ported from the 1982 C64 program, summarizing fork changes, build instructions, CLI usage and sound-customization knobs, an explanation of the reciter and output pipeline, and licensing.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "overview",
+        "usage"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Eleven sections spanning fork changes, build, usage, pipeline explanation, and license."
+    },
+    {
+      "id": "file:demo.bat",
+      "type": "file",
+      "name": "demo.bat",
+      "filePath": "demo.bat",
+      "summary": "Batch sampler run from dist/ that invokes the built sam binary with a range of example arguments, demonstrating phonetic input, pitch/speed/mouth/throat customization, singing mode, and roleplay voices.",
+      "tags": [
+        "script",
+        "demo",
+        "usage",
+        "build-system"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:vcpkg.json",
+      "type": "config",
+      "name": "vcpkg.json",
+      "filePath": "vcpkg.json",
+      "summary": "vcpkg manifest declaring the project name, version, and its single SDL2 dependency for live audio output.",
+      "tags": [
+        "configuration",
+        "dependencies",
+        "vcpkg",
+        "build-system"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.claude/settings.json",
+      "type": "config",
+      "name": "settings.json",
+      "filePath": ".claude/settings.json",
+      "summary": "Claude Code project settings declaring the enabled plugins for this repository's tooling.",
+      "tags": [
+        "configuration",
+        "tooling",
+        "claude-code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.understand-anything/.understandignore",
+      "type": "config",
+      "name": ".understandignore",
+      "filePath": ".understand-anything/.understandignore",
+      "summary": "Ignore-pattern list controlling which files the Understand-Anything analyzer skips when scanning the project.",
+      "tags": [
+        "configuration",
+        "tooling",
+        "ignore-patterns"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.understand-anything/config.json",
+      "type": "config",
+      "name": "config.json",
+      "filePath": ".understand-anything/config.json",
+      "summary": "Understand-Anything tool configuration setting the output language for generated knowledge-graph content.",
+      "tags": [
+        "configuration",
+        "tooling",
+        "knowledge-graph"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/debug.c",
+      "type": "file",
+      "name": "debug.c",
+      "filePath": "src/debug.c",
+      "summary": "Implements the pysamtts stage-dump and human-readable trace functions, emitting cleanly delimited @@STAGE/@@END sections to stdout so a Python reimplementation can be validated byte-for-byte against the C reference.",
+      "tags": [
+        "debugging",
+        "instrumentation",
+        "serialization",
+        "test-fixtures"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Dump functions write a fixed @@STAGE <name> / # header / integer-rows / @@END <name> envelope per pipeline stage for golden-fixture capture."
+    },
+    {
+      "id": "file:src/debug.h",
+      "type": "file",
+      "name": "debug.h",
+      "filePath": "src/debug.h",
+      "summary": "Header defining the DUMP_RECITER..DUMP_ALL bitmasks for the global dumpstages flag and declaring the Dump*/Print* instrumentation entry points; widely included across main.c, sam.c, reciter.c, and render.c.",
+      "tags": [
+        "debugging",
+        "instrumentation",
+        "type-definition",
+        "header"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Stage selectors are powers-of-two bit flags (0x01..0x40) ORed into a single dumpstages bitmask, with DUMP_ALL (0x7F) covering every stage."
+    },
+    {
+      "id": "function:src/debug.c:DumpReciter",
+      "type": "function",
+      "name": "DumpReciter",
+      "filePath": "src/debug.c",
+      "lineRange": [
+        14,
+        21
+      ],
+      "summary": "Emits the raw phonetic string produced by the reciter inside a @@STAGE reciter / @@END reciter envelope.",
+      "tags": [
+        "debugging",
+        "instrumentation",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/debug.c:DumpPhonemeList",
+      "type": "function",
+      "name": "DumpPhonemeList",
+      "filePath": "src/debug.c",
+      "lineRange": [
+        28,
+        41
+      ],
+      "summary": "Dumps a named pipeline stage's parallel phonemeindex/phonemeLength/stress arrays as space-separated integer rows for golden-fixture comparison.",
+      "tags": [
+        "debugging",
+        "instrumentation",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/debug.c:DumpFrames",
+      "type": "function",
+      "name": "DumpFrames",
+      "filePath": "src/debug.c",
+      "lineRange": [
+        47,
+        65
+      ],
+      "summary": "Dumps the per-frame formant data (frequency, amplitude, pitch, and sampled-consonant flag) after CreateTransitions as integer rows in a delimited stage section.",
+      "tags": [
+        "debugging",
+        "instrumentation",
+        "serialization"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/debug.c:PrintPhonemes",
+      "type": "function",
+      "name": "PrintPhonemes",
+      "filePath": "src/debug.c",
+      "lineRange": [
+        67,
+        95
+      ],
+      "summary": "Prints a human-readable table of the phoneme index, length, and stress arrays for verbose -debug tracing.",
+      "tags": [
+        "debugging",
+        "instrumentation",
+        "tracing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/debug.c:PrintOutput",
+      "type": "function",
+      "name": "PrintOutput",
+      "filePath": "src/debug.c",
+      "lineRange": [
+        97,
+        119
+      ],
+      "summary": "Prints a human-readable table of the compacted *Output[] formant arrays (flag, frequencies, amplitudes, pitch) passed into Render.",
+      "tags": [
+        "debugging",
+        "instrumentation",
+        "tracing"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/debug.c:PrintRule",
+      "type": "function",
+      "name": "PrintRule",
+      "filePath": "src/debug.c",
+      "lineRange": [
+        123,
+        135
+      ],
+      "summary": "Decodes and prints a single reciter rule starting at the given table offset by reading rule bytes via GetRuleByte.",
+      "tags": [
+        "debugging",
+        "instrumentation",
+        "tracing"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main.c",
+      "target": "file:src/debug.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main.c",
+      "target": "file:src/reciter.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main.c",
+      "target": "file:src/sam.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "file:src/debug.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "file:src/render.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "file:src/sam.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "file:src/SamTabs.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main.c",
+      "target": "function:src/main.c:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main.c",
+      "target": "function:src/main.c:WriteWav",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main.c",
+      "target": "function:src/main.c:PrintUsage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main.c",
+      "target": "function:src/main.c:OutputSound",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/main.c",
+      "target": "function:src/main.c:main",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "function:src/sam.c:SAMMain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "function:src/sam.c:Parser1",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "function:src/sam.c:Parser2",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "function:src/sam.c:AdjustLengths",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "function:src/sam.c:PrepareOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "function:src/sam.c:InsertBreath",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "function:src/sam.c:CopyStress",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "function:src/sam.c:Init",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "function:src/sam.c:Code41240",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "function:src/sam.c:SetPhonemeLength",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "function:src/sam.c:Insert",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "function:src/sam.c:SetInput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "function:src/sam.c:SAMMain",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/sam.c",
+      "target": "function:src/sam.c:SetInput",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/main.c:main",
+      "target": "function:src/sam.c:SAMMain",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/main.c:main",
+      "target": "function:src/sam.c:SetInput",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/main.c:OutputSound",
+      "target": "function:src/main.c:WriteWav",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:src/sam.c:SAMMain",
+      "target": "function:src/sam.c:Init",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/sam.c:SAMMain",
+      "target": "function:src/sam.c:Parser1",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/sam.c:SAMMain",
+      "target": "function:src/sam.c:Parser2",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/sam.c:SAMMain",
+      "target": "function:src/sam.c:CopyStress",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/sam.c:SAMMain",
+      "target": "function:src/sam.c:SetPhonemeLength",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/sam.c:SAMMain",
+      "target": "function:src/sam.c:AdjustLengths",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/sam.c:SAMMain",
+      "target": "function:src/sam.c:Code41240",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/sam.c:SAMMain",
+      "target": "function:src/sam.c:InsertBreath",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/sam.c:SAMMain",
+      "target": "function:src/sam.c:PrepareOutput",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/sam.c:InsertBreath",
+      "target": "function:src/sam.c:Insert",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/sam.c:Code41240",
+      "target": "function:src/sam.c:Insert",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/sam.c:Parser2",
+      "target": "function:src/sam.c:Insert",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/reciter.c",
+      "target": "file:src/debug.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/reciter.c",
+      "target": "file:src/reciter.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/reciter.c",
+      "target": "file:src/ReciterTabs.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/reciter.c",
+      "target": "function:src/reciter.c:TextToPhonemes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/reciter.c",
+      "target": "function:src/reciter.c:GetRuleByte",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/reciter.c",
+      "target": "function:src/reciter.c:Code37055",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/reciter.c",
+      "target": "function:src/reciter.c:Code37066",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/reciter.c",
+      "target": "function:src/reciter.c:TextToPhonemes",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/reciter.c:TextToPhonemes",
+      "target": "function:src/reciter.c:GetRuleByte",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/reciter.c:TextToPhonemes",
+      "target": "function:src/reciter.c:Code37055",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/reciter.c:TextToPhonemes",
+      "target": "function:src/reciter.c:Code37066",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/render.c",
+      "target": "file:src/render.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/render.c",
+      "target": "file:src/RenderTabs.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/render.c",
+      "target": "file:src/debug.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/render.c",
+      "target": "function:src/render.c:Render",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/render.c",
+      "target": "function:src/render.c:RenderSample",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/render.c",
+      "target": "function:src/render.c:SetMouthThroat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/render.c",
+      "target": "function:src/render.c:AddInflection",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/render.c",
+      "target": "function:src/render.c:trans",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/render.c",
+      "target": "function:src/render.c:Read",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/render.c",
+      "target": "function:src/render.c:Write",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/render.c",
+      "target": "function:src/render.c:Render",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/render.c",
+      "target": "function:src/render.c:SetMouthThroat",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/render.c:Render",
+      "target": "function:src/render.c:RenderSample",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/render.c:Render",
+      "target": "function:src/render.c:AddInflection",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/render.c:Render",
+      "target": "function:src/render.c:Read",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/render.c:Render",
+      "target": "function:src/render.c:Write",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/render.c:SetMouthThroat",
+      "target": "function:src/render.c:trans",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/render.h",
+      "target": "function:src/render.c:Render",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/render.h",
+      "target": "function:src/render.c:SetMouthThroat",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CMakeLists.txt",
+      "target": "file:src/main.c",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "document:CMakeLists.txt",
+      "target": "file:src/sam.c",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "document:CMakeLists.txt",
+      "target": "file:src/reciter.c",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "document:CMakeLists.txt",
+      "target": "file:src/render.c",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "document:CMakeLists.txt",
+      "target": "file:src/debug.c",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "config:CMakePresets.json",
+      "target": "document:CMakeLists.txt",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:vcpkg.json",
+      "target": "document:CMakeLists.txt",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:src/main.c",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:src/main.c",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:src/sam.c",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:src/reciter.c",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:src/render.c",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "file:src/debug.c",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:demo.bat",
+      "target": "document:CMakeLists.txt",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/debug.c",
+      "target": "file:src/debug.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/debug.c",
+      "target": "function:src/debug.c:DumpReciter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/debug.c",
+      "target": "function:src/debug.c:DumpPhonemeList",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/debug.c",
+      "target": "function:src/debug.c:DumpFrames",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/debug.c",
+      "target": "function:src/debug.c:PrintPhonemes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/debug.c",
+      "target": "function:src/debug.c:PrintOutput",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/debug.c",
+      "target": "function:src/debug.c:PrintRule",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/debug.c",
+      "target": "function:src/debug.c:DumpReciter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/debug.c",
+      "target": "function:src/debug.c:DumpPhonemeList",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/debug.c",
+      "target": "function:src/debug.c:DumpFrames",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/debug.c",
+      "target": "function:src/debug.c:PrintPhonemes",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/debug.c",
+      "target": "function:src/debug.c:PrintOutput",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/debug.c",
+      "target": "function:src/debug.c:PrintRule",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/debug.c:PrintRule",
+      "target": "function:src/reciter.c:GetRuleByte",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:entry",
+      "name": "CLI Entry & Driver",
+      "description": "Command-line front end that parses argv, prepares input text, drives the reciter-to-render pipeline, and emits PCM via SDL or WAV, plus the example invocation sampler.",
+      "nodeIds": [
+        "file:src/main.c",
+        "file:demo.bat"
+      ]
+    },
+    {
+      "id": "layer:reciter",
+      "name": "Reciter (Text to Phoneme)",
+      "description": "First pipeline stage that rewrites English text into a phonetic string using surrounding-letter rule matching, backed by its per-character flag and rule tables.",
+      "nodeIds": [
+        "file:src/reciter.c",
+        "file:src/reciter.h",
+        "file:src/ReciterTabs.h"
+      ]
+    },
+    {
+      "id": "layer:sam-core",
+      "name": "SAM Core (Phoneme Processing)",
+      "description": "Central orchestrator stage running Parser1/Parser2, stress and length adjustment, phoneme insertion, and output preparation over the phoneme arrays, backed by stress/flag/rewrite lookup tables.",
+      "nodeIds": [
+        "file:src/sam.c",
+        "file:src/sam.h",
+        "file:src/SamTabs.h"
+      ]
+    },
+    {
+      "id": "layer:render",
+      "name": "Render (Formant Synthesis)",
+      "description": "Final DSP stage that expands the timed phoneme list into per-10ms formant frames, interpolates transitions, and synthesizes 8-bit PCM samples, backed by formant/sine/blend lookup tables.",
+      "nodeIds": [
+        "file:src/render.c",
+        "file:src/render.h",
+        "file:src/RenderTabs.h"
+      ]
+    },
+    {
+      "id": "layer:instrumentation",
+      "name": "Debug Instrumentation",
+      "description": "Cross-cutting stage-dump and trace facility (included by every pipeline source) that emits parseable @@STAGE sections for byte-for-byte validation of the planned Python port.",
+      "nodeIds": [
+        "file:src/debug.c",
+        "file:src/debug.h"
+      ]
+    },
+    {
+      "id": "layer:build-tooling",
+      "name": "Build, Tooling & Documentation",
+      "description": "CMake build definition, vcpkg/SDL2 dependency manifest, configure/build presets, project documentation, and editor/analyzer tool settings.",
+      "nodeIds": [
+        "document:CMakeLists.txt",
+        "config:CMakePresets.json",
+        "config:vcpkg.json",
+        "document:README.md",
+        "document:CLAUDE.md",
+        "config:.claude/settings.json",
+        "config:.understand-anything/.understandignore",
+        "config:.understand-anything/config.json"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Project Overview",
+      "description": "Start with the README to understand what SAM is: a tiny C text-to-speech synthesizer, a C adaptation of the 1982 Commodore C64 \"Software Automatic Mouth.\" It introduces the two halves of the program — a \"reciter\" that turns English text into phonemes and a \"Phoneme-To-Speech\" routine that produces audio — plus the CLI usage and the sound knobs (-pitch, -speed, -throat, -mouth) you'll see wired up throughout the tour.",
+      "nodeIds": [
+        "document:README.md"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "Architecture Guide",
+      "description": "Before reading code, skim CLAUDE.md, which documents the project's deliberate style and its three-stage pipeline (reciter → SAM core → render). Crucially, it explains why the C looks unusual: it was translated opcode-by-opcode from 6502 assembly, so file-scoped A/X/Y \"registers,\" goto control flow, and numbered helpers like Code41240 are intentional. It also describes the pysamtts stage-dump instrumentation you'll meet in Step 7.",
+      "nodeIds": [
+        "document:CLAUDE.md"
+      ]
+    },
+    {
+      "order": 3,
+      "title": "CLI Entry Point & Driver",
+      "description": "main.c is the program's entry point and front end. It parses argv, uppercases the input text and appends the end-of-text marker, then drives the whole pipeline by calling into the reciter and SAM core. Once synthesis finishes, it either plays the resulting 8-bit PCM buffer live via SDL or writes it out as a WAV file — making this file the best bird's-eye view of how a single run flows from text to sound.",
+      "nodeIds": [
+        "file:src/main.c",
+        "file:src/sam.h",
+        "file:src/reciter.h"
+      ]
+    },
+    {
+      "order": 4,
+      "title": "Reciter: Text to Phonemes",
+      "description": "The first pipeline stage lives in reciter.c, whose TextToPhonemes() rewrites English text into a phonetic string. It works by matching each letter against rules keyed on its surrounding characters, using class wildcards (vowel, consonant groups) to generalize. This stage is skipped entirely in -phonetic mode, where you feed phonemes directly. The rule table and per-character flags backing it live in ReciterTabs.h.",
+      "nodeIds": [
+        "file:src/reciter.c",
+        "file:src/ReciterTabs.h",
+        "file:src/reciter.h"
+      ]
+    },
+    {
+      "order": 5,
+      "title": "SAM Core: Phoneme Processing",
+      "description": "sam.c is the orchestrator and the heart of the program. Building on the phonetic string from Step 4, SAMMain() runs an ordered sequence of passes — Parser1 (split into parallel phonemeindex/stress/length arrays), Parser2 (phoneme rewrite rules), CopyStress, SetPhonemeLength, AdjustLengths, Code41240 (insert extra phonemes), InsertBreath, and finally PrepareOutput. Phonemes are referenced everywhere by integer index, and the flag bitmasks and rewrite rules that drive nearly every decision live in SamTabs.h.",
+      "nodeIds": [
+        "file:src/sam.c",
+        "file:src/SamTabs.h",
+        "file:src/sam.h"
+      ]
+    },
+    {
+      "order": 6,
+      "title": "Render: Formant Synthesis",
+      "description": "render.c is the final synthesis stage, reached via PrepareOutput from Step 5. Render() expands the timed phoneme list into 256 per-10ms frames of formant data (three frequencies and amplitudes plus pitch), interpolates the transitions between phonemes, then synthesizes 8-bit PCM samples into the global buffer that main.c plays or saves. SetMouthThroat() implements the -mouth/-throat knobs by remapping the formant tables, and all the formant curves, sine, and blend tables live in RenderTabs.h.",
+      "nodeIds": [
+        "file:src/render.c",
+        "file:src/RenderTabs.h",
+        "file:src/render.h"
+      ]
+    },
+    {
+      "order": 7,
+      "title": "Debug & Stage-Dump Instrumentation",
+      "description": "The pysamtts branch adds debug.c/debug.h to support a planned Python reimplementation. Beyond the human-oriented -debug trace, the -dump-* flags set bits in dumpstages and emit clean, parseable @@STAGE/@@END sections at each pipeline boundary, so a port can be validated byte-for-byte against this C reference. Any dump flag suppresses audio and short-circuits rendering after the frame tables. The DUMP_RECITER..DUMP_ALL bitmasks in debug.h are included across every .c file you've seen so far.",
+      "nodeIds": [
+        "file:src/debug.c",
+        "file:src/debug.h"
+      ]
+    },
+    {
+      "order": 8,
+      "title": "Build System: CMake & vcpkg",
+      "description": "CMakeLists.txt ties the whole project together: it compiles the five core sources from Steps 3-6, conditionally links SDL2 (so you can pass -DUSE_SDL=OFF for a WAV-only build), and copies the binary to dist/. CMakePresets.json defines the windows/linux presets and wires in the vcpkg toolchain, while vcpkg.json declares the single dependency, SDL2. Together these give you a unified, cross-platform build from one command.",
+      "nodeIds": [
+        "document:CMakeLists.txt",
+        "config:CMakePresets.json",
+        "config:vcpkg.json"
+      ]
+    },
+    {
+      "order": 9,
+      "title": "Trying It Out",
+      "description": "Finally, demo.bat is a runnable sampler that invokes the built sam binary with a spread of example arguments and voices, exercising the CLI options introduced in the README. Run it from dist/ to hear the full pipeline — text through reciter, SAM core, and render — in action, and to experiment with the -pitch, -speed, -throat, and -mouth knobs you've now traced end to end.",
+      "nodeIds": [
+        "file:demo.bat"
+      ]
+    }
+  ]
+}

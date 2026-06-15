@@ -1,0 +1,812 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "a2d5bab6d976cafce86a23fe278913c41e840479",
+  "generatedAt": "2026-06-15T21:21:42.155Z",
+  "files": {
+    ".claude/settings.json": {
+      "filePath": ".claude/settings.json",
+      "contentHash": "43fd9292d8554aea3381e56d82032711f710bf8de2cec4c06ef2966351c70934",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    ".understand-anything/.understandignore": {
+      "filePath": ".understand-anything/.understandignore",
+      "contentHash": "3262949345e43dac6c77ccbb544649d0fb255b72da9ee09edabbad2fdc6d8da9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 20,
+      "hasStructuralAnalysis": false
+    },
+    ".understand-anything/config.json": {
+      "filePath": ".understand-anything/config.json",
+      "contentHash": "08d37f20ea0af2233ae24f094723759f952381ecb6dd7f2aaa05ef96e95eae6b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
+    },
+    "CLAUDE.md": {
+      "filePath": "CLAUDE.md",
+      "contentHash": "ddb98ec5b623ccd06efc6dfc3d9d83587fd9bbc709e4be1ca42bb9234cc8e49a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 88,
+      "hasStructuralAnalysis": true
+    },
+    "CMakeLists.txt": {
+      "filePath": "CMakeLists.txt",
+      "contentHash": "9df4ecb04a3670aa2da0ae7f824832e248f614f3343b296ed90cbdb42a0db0c3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 39,
+      "hasStructuralAnalysis": false
+    },
+    "CMakePresets.json": {
+      "filePath": "CMakePresets.json",
+      "contentHash": "0fb9cd47477d835900fcd4d5cdac8034922e6200d96d0fd41f3b4b69b772f5e2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 38,
+      "hasStructuralAnalysis": true
+    },
+    "demo.bat": {
+      "filePath": "demo.bat",
+      "contentHash": "f5c196632de67d324edd701b012ffcc1546dd7a8ddc2bf26e59cdfe8742451cc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 49,
+      "hasStructuralAnalysis": false
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "5890a2e2d8ff547ad35228c9a360415d83f14036079fbacef1ba2c822c167d89",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 229,
+      "hasStructuralAnalysis": true
+    },
+    "src/debug.c": {
+      "filePath": "src/debug.c",
+      "contentHash": "4254a965f5e913ab890a4baa4bd91f7510d8d789cd0962e0c0db473d2f3d319f",
+      "functions": [
+        {
+          "name": "DumpReciter",
+          "params": [
+            "phonemes"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "DumpPhonemeList",
+          "params": [
+            "stage",
+            "phonemeindex",
+            "phonemeLength",
+            "stress",
+            "maxlen"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "DumpFrames",
+          "params": [
+            "stage",
+            "flag",
+            "f1",
+            "f2",
+            "f3",
+            "a1",
+            "a2",
+            "a3",
+            "p"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "PrintPhonemes",
+          "params": [
+            "phonemeindex",
+            "phonemeLength",
+            "stress"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "PrintOutput",
+          "params": [
+            "flag",
+            "f1",
+            "f2",
+            "f3",
+            "a1",
+            "a2",
+            "a3",
+            "p"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "PrintRule",
+          "params": [
+            "offset"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 13
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "stdio.h",
+          "specifiers": [
+            "stdio.h"
+          ]
+        },
+        {
+          "source": "debug.h",
+          "specifiers": [
+            "debug.h"
+          ]
+        }
+      ],
+      "exports": [
+        "DumpReciter",
+        "DumpPhonemeList",
+        "DumpFrames",
+        "PrintPhonemes",
+        "PrintOutput",
+        "PrintRule"
+      ],
+      "totalLines": 136,
+      "hasStructuralAnalysis": true
+    },
+    "src/debug.h": {
+      "filePath": "src/debug.h",
+      "contentHash": "3070c41326e206190ed74ce9e1ed64456dc462176ce42dd2bf13a690f134f42c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 66,
+      "hasStructuralAnalysis": true
+    },
+    "src/main.c": {
+      "filePath": "src/main.c",
+      "contentHash": "a99a35d4be1ee1a75c1020d471bbbb21bbd0b206b5f56e25c5a6a1dbfee7ffeb",
+      "functions": [
+        {
+          "name": "WriteWav",
+          "params": [
+            "filename",
+            "buffer",
+            "bufferlength"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "PrintUsage",
+          "params": [],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 55
+        },
+        {
+          "name": "main",
+          "params": [
+            "argc",
+            "argv"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 154
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "stdio.h",
+          "specifiers": [
+            "stdio.h"
+          ]
+        },
+        {
+          "source": "stdlib.h",
+          "specifiers": [
+            "stdlib.h"
+          ]
+        },
+        {
+          "source": "ctype.h",
+          "specifiers": [
+            "ctype.h"
+          ]
+        },
+        {
+          "source": "string.h",
+          "specifiers": [
+            "string.h"
+          ]
+        },
+        {
+          "source": "reciter.h",
+          "specifiers": [
+            "reciter.h"
+          ]
+        },
+        {
+          "source": "sam.h",
+          "specifiers": [
+            "sam.h"
+          ]
+        },
+        {
+          "source": "debug.h",
+          "specifiers": [
+            "debug.h"
+          ]
+        }
+      ],
+      "exports": [
+        "WriteWav",
+        "PrintUsage",
+        "main"
+      ],
+      "totalLines": 319,
+      "hasStructuralAnalysis": true
+    },
+    "src/reciter.c": {
+      "filePath": "src/reciter.c",
+      "contentHash": "0da0bca9b4d27973ccedcb5c63f087e523295ba479986ad21f19ae62cc9bc5f4",
+      "functions": [
+        {
+          "name": "Code37055",
+          "params": [
+            "mem59"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "Code37066",
+          "params": [
+            "mem58"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "GetRuleByte",
+          "params": [
+            "mem62",
+            "Y"
+          ],
+          "returnType": "unsigned char",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "TextToPhonemes",
+          "params": [
+            "input"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 508
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "stdio.h",
+          "specifiers": [
+            "stdio.h"
+          ]
+        },
+        {
+          "source": "string.h",
+          "specifiers": [
+            "string.h"
+          ]
+        },
+        {
+          "source": "reciter.h",
+          "specifiers": [
+            "reciter.h"
+          ]
+        },
+        {
+          "source": "ReciterTabs.h",
+          "specifiers": [
+            "ReciterTabs.h"
+          ]
+        },
+        {
+          "source": "debug.h",
+          "specifiers": [
+            "debug.h"
+          ]
+        }
+      ],
+      "exports": [
+        "Code37055",
+        "Code37066",
+        "GetRuleByte",
+        "TextToPhonemes"
+      ],
+      "totalLines": 552,
+      "hasStructuralAnalysis": true
+    },
+    "src/reciter.h": {
+      "filePath": "src/reciter.h",
+      "contentHash": "61b85867470d5dbb0a507e5d73d5a16b518b01d88363913e02fb2bae998466ad",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
+    "src/ReciterTabs.h": {
+      "filePath": "src/ReciterTabs.h",
+      "contentHash": "ccb7222526b0f512f5af24d793daaa39941ada2521eb45e13918a435f4aa4a62",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 547,
+      "hasStructuralAnalysis": true
+    },
+    "src/render.c": {
+      "filePath": "src/render.c",
+      "contentHash": "a655e4f453d6775cfca013641ad5f52de03f3dfc6ab943ff088287cdb63162e6",
+      "functions": [
+        {
+          "name": "Output8BitAry",
+          "params": [
+            "index",
+            "ary"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "Output8Bit",
+          "params": [
+            "index",
+            "A"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "Read",
+          "params": [
+            "p",
+            "Y"
+          ],
+          "returnType": "unsigned char",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "Write",
+          "params": [
+            "p",
+            "Y",
+            "value"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "RenderSample",
+          "params": [
+            "mem66"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 151
+        },
+        {
+          "name": "Render",
+          "params": [],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 595
+        },
+        {
+          "name": "AddInflection",
+          "params": [
+            "mem48",
+            "phase1"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "SetMouthThroat",
+          "params": [
+            "mouth",
+            "throat"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 62
+        },
+        {
+          "name": "trans",
+          "params": [
+            "mem39212",
+            "mem39213"
+          ],
+          "returnType": "unsigned char",
+          "exported": true,
+          "lineCount": 42
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "stdio.h",
+          "specifiers": [
+            "stdio.h"
+          ]
+        },
+        {
+          "source": "string.h",
+          "specifiers": [
+            "string.h"
+          ]
+        },
+        {
+          "source": "stdlib.h",
+          "specifiers": [
+            "stdlib.h"
+          ]
+        },
+        {
+          "source": "render.h",
+          "specifiers": [
+            "render.h"
+          ]
+        },
+        {
+          "source": "RenderTabs.h",
+          "specifiers": [
+            "RenderTabs.h"
+          ]
+        },
+        {
+          "source": "debug.h",
+          "specifiers": [
+            "debug.h"
+          ]
+        }
+      ],
+      "exports": [
+        "Output8BitAry",
+        "Output8Bit",
+        "Read",
+        "Write",
+        "RenderSample",
+        "Render",
+        "AddInflection",
+        "SetMouthThroat",
+        "trans"
+      ],
+      "totalLines": 1117,
+      "hasStructuralAnalysis": true
+    },
+    "src/render.h": {
+      "filePath": "src/render.h",
+      "contentHash": "6d611820ebd6a54d3f23fb1cf4a761f5e5d3f3f91c4ad267f36432dbbdf6131a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": true
+    },
+    "src/RenderTabs.h": {
+      "filePath": "src/RenderTabs.h",
+      "contentHash": "526ad188199125d6896417e1d6ba858a70cae073742944db9d761c7342f86a34",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 443,
+      "hasStructuralAnalysis": true
+    },
+    "src/sam.c": {
+      "filePath": "src/sam.c",
+      "contentHash": "47a689e4a79c805c09df7d79c30163ac87b7ac82f73275a5ffc6bbc808dbf861",
+      "functions": [
+        {
+          "name": "SetInput",
+          "params": [
+            "_input"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "SetSpeed",
+          "params": [
+            "_speed"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "SetPitch",
+          "params": [
+            "_pitch"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "SetMouth",
+          "params": [
+            "_mouth"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "SetThroat",
+          "params": [
+            "_throat"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "EnableSingmode",
+          "params": [],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "GetBufferLength",
+          "params": [],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "Init",
+          "params": [],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 47
+        },
+        {
+          "name": "SAMMain",
+          "params": [],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 45
+        },
+        {
+          "name": "PrepareOutput",
+          "params": [],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 47
+        },
+        {
+          "name": "InsertBreath",
+          "params": [],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 48
+        },
+        {
+          "name": "CopyStress",
+          "params": [],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "Insert",
+          "params": [
+            "position",
+            "mem60",
+            "mem59",
+            "mem58"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "Parser1",
+          "params": [],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 124
+        },
+        {
+          "name": "SetPhonemeLength",
+          "params": [],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "Code41240",
+          "params": [],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "Parser2",
+          "params": [],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 435
+        },
+        {
+          "name": "AdjustLengths",
+          "params": [],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 355
+        },
+        {
+          "name": "Code47503",
+          "params": [
+            "mem52"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 28
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "stdio.h",
+          "specifiers": [
+            "stdio.h"
+          ]
+        },
+        {
+          "source": "string.h",
+          "specifiers": [
+            "string.h"
+          ]
+        },
+        {
+          "source": "stdlib.h",
+          "specifiers": [
+            "stdlib.h"
+          ]
+        },
+        {
+          "source": "debug.h",
+          "specifiers": [
+            "debug.h"
+          ]
+        },
+        {
+          "source": "sam.h",
+          "specifiers": [
+            "sam.h"
+          ]
+        },
+        {
+          "source": "render.h",
+          "specifiers": [
+            "render.h"
+          ]
+        },
+        {
+          "source": "SamTabs.h",
+          "specifiers": [
+            "SamTabs.h"
+          ]
+        }
+      ],
+      "exports": [
+        "SetInput",
+        "SetSpeed",
+        "SetPitch",
+        "SetMouth",
+        "SetThroat",
+        "EnableSingmode",
+        "GetBufferLength",
+        "Init",
+        "SAMMain",
+        "PrepareOutput",
+        "InsertBreath",
+        "CopyStress",
+        "Insert",
+        "Parser1",
+        "SetPhonemeLength",
+        "Code41240",
+        "Parser2",
+        "AdjustLengths",
+        "Code47503"
+      ],
+      "totalLines": 1462,
+      "hasStructuralAnalysis": true
+    },
+    "src/sam.h": {
+      "filePath": "src/sam.h",
+      "contentHash": "02b662f7cb2aebba95b4411c4d5de8b5a5f456b2a934c5dfe07152588eaba66b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 39,
+      "hasStructuralAnalysis": true
+    },
+    "src/SamTabs.h": {
+      "filePath": "src/SamTabs.h",
+      "contentHash": "d0f071700bc98c96e156533160268ac23631c1d00e39513019121a1ea4948ed0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 216,
+      "hasStructuralAnalysis": true
+    },
+    "vcpkg.json": {
+      "filePath": "vcpkg.json",
+      "contentHash": "b751c49fcc83f80d37a4f5a312972a4c9994a63c30a78de4eae9b3ad0ddc5c6f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": true
+    }
+  }
+}

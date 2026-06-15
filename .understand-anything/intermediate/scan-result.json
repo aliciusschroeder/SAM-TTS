@@ -1,0 +1,178 @@
+{
+  "name": "sam",
+  "description": "SAM (Software Automatic Mouth) is a tiny C text-to-speech synthesizer, a C adaptation of the 1982 Commodore C64 speech program. It pairs a text-to-phoneme converter (reciter) with a phoneme-to-speech routine, plays audio live via SDL2 or writes .wav files, and this fork adds a unified Windows/Linux CMake/vcpkg build plus golden-fixture stage-dump instrumentation for a planned Python reimplementation.",
+  "languages": ["batch", "c", "json", "markdown", "txt"],
+  "frameworks": [],
+  "files": [
+    {
+      "path": ".claude/settings.json",
+      "language": "json",
+      "sizeLines": 5,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".understand-anything/.understandignore",
+      "language": "unknown",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".understand-anything/config.json",
+      "language": "json",
+      "sizeLines": 3,
+      "fileCategory": "config"
+    },
+    {
+      "path": "CLAUDE.md",
+      "language": "markdown",
+      "sizeLines": 87,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "language": "txt",
+      "sizeLines": 38,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "CMakePresets.json",
+      "language": "json",
+      "sizeLines": 37,
+      "fileCategory": "config"
+    },
+    {
+      "path": "demo.bat",
+      "language": "batch",
+      "sizeLines": 48,
+      "fileCategory": "script"
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "sizeLines": 228,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "src/debug.c",
+      "language": "c",
+      "sizeLines": 135,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/debug.h",
+      "language": "c",
+      "sizeLines": 65,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main.c",
+      "language": "c",
+      "sizeLines": 318,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/reciter.c",
+      "language": "c",
+      "sizeLines": 551,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/reciter.h",
+      "language": "c",
+      "sizeLines": 8,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/ReciterTabs.h",
+      "language": "c",
+      "sizeLines": 546,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/render.c",
+      "language": "c",
+      "sizeLines": 1116,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/render.h",
+      "language": "c",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/RenderTabs.h",
+      "language": "c",
+      "sizeLines": 442,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/sam.c",
+      "language": "c",
+      "sizeLines": 1461,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/sam.h",
+      "language": "c",
+      "sizeLines": 38,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/SamTabs.h",
+      "language": "c",
+      "sizeLines": 215,
+      "fileCategory": "code"
+    },
+    {
+      "path": "vcpkg.json",
+      "language": "json",
+      "sizeLines": 6,
+      "fileCategory": "config"
+    }
+  ],
+  "totalFiles": 21,
+  "filteredByIgnore": 0,
+  "estimatedComplexity": "small",
+  "importMap": {
+    ".claude/settings.json": [],
+    ".understand-anything/.understandignore": [],
+    ".understand-anything/config.json": [],
+    "CLAUDE.md": [],
+    "CMakeLists.txt": [],
+    "CMakePresets.json": [],
+    "demo.bat": [],
+    "README.md": [],
+    "src/debug.c": [
+      "src/debug.h"
+    ],
+    "src/debug.h": [],
+    "src/main.c": [
+      "src/debug.h",
+      "src/reciter.h",
+      "src/sam.h"
+    ],
+    "src/reciter.c": [
+      "src/debug.h",
+      "src/reciter.h",
+      "src/ReciterTabs.h"
+    ],
+    "src/reciter.h": [],
+    "src/ReciterTabs.h": [],
+    "src/render.c": [
+      "src/debug.h",
+      "src/render.h",
+      "src/RenderTabs.h"
+    ],
+    "src/render.h": [],
+    "src/RenderTabs.h": [],
+    "src/sam.c": [
+      "src/debug.h",
+      "src/render.h",
+      "src/sam.h",
+      "src/SamTabs.h"
+    ],
+    "src/sam.h": [],
+    "src/SamTabs.h": []
+  }
+}
