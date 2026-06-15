@@ -47,7 +47,7 @@ char *buffer = NULL;
 
 void SetInput(char *_input)
 {
-    int i, l;
+    size_t i, l;
     l = strlen(_input);
     if (l > 254) l = 254;
     for(i=0; i<l; i++)
