@@ -15,36 +15,27 @@ less than 39KB (much smaller on embedded devices as the executable-overhead is n
 For immediate output it uses the SDL-library, otherwise it can save .wav files. 
 
 An online version and executables for Windows can be found on the web site: http://simulationcorner.net/index.php?page=sam
-
-Compile
-=======
-
-Simply type "make" in your command prompt.
-In order to compile without SDL remove the SDL statements from the CFLAGS and LFLAGS variables in the file "Makefile".
-
-It should compile on every UNIX-like operating system. For Windows you need Cygwin or MinGW( + libsdl).
-
-Fork
-====
-
 Take a look at https://github.com/vidarh/SAM for a more refactored and cleaner version of the code.
 
-Usage
-=====
+## Build
 
-type
+0. Configure `vcpkg`
 
-	./sam I am Sam
+```bash
+# Execute this anywhere you want vcpkg set up
+git clone https://github.com/microsoft/vcpkg
+bootstrap-vcpkg.sh # Windows: .\vcpkg\bootstrap-vcpkg.bat
+export VCPKG_ROOT=/path/to/vcpgkg # Windows: $env:VCPKG_ROOT = "$PWD\vcpkg"
+# To persist VCPKG_ROOT, add export to user profile on Linux / set env variable via settings on Windows respectively
+```
 
-for the first output.
+1. Build using `cmake`
 
-If you have disabled SDL try
+```bash
+cmake --preset windows
+cmake --build --preset windows
+```
 
-	./sam -wav i_am_sam.wav I am Sam
-
-to get a wav file. This file can be played by many media players available for the PC.
-
-you can try other options like
 	-pitch number
 	-speed number
 	-throat number
