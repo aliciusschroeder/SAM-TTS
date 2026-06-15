@@ -59,6 +59,16 @@ void PrintUsage()
     printf("    -sing            special treatment of pitch\n");
     printf("    -debug            print additional debug messages\n");
     printf("\n");
+    printf("  pysamtts stage dumps (clean, parseable, no audio):\n");
+    printf("    -dump-reciter     dump reciter phonetic-string output\n");
+    printf("    -dump-parser1     dump phoneme list after Parser1\n");
+    printf("    -dump-rewrite     dump phoneme list after SetPhonemeLength\n");
+    printf("    -dump-adjust      dump phoneme list after AdjustLengths\n");
+    printf("    -dump-final       dump phoneme list after InsertBreath\n");
+    printf("    -dump-prepare     dump output arrays after PrepareOutput\n");
+    printf("    -dump-frames      dump formant/pitch frames after CreateTransitions\n");
+    printf("    -dump-all         dump every stage above (one run)\n");
+    printf("\n");
 
 
     printf("     VOWELS                            VOICED CONSONANTS    \n");
@@ -147,6 +157,10 @@ void OutputSound() {}
 #endif
 
 int debug = 0;
+// pysamtts stage-dump selection (bitmask of DUMP_* from debug.h). Non-zero
+// puts the binary in fixture-dump mode: clean per-stage sections on stdout and
+// no audio output. See debug.h.
+int dumpstages = 0;
 
 int main(int argc, char **argv)
 {
@@ -189,6 +203,40 @@ int main(int argc, char **argv)
             if (strcmp(&argv[i][1], "debug")==0)
             {
                 debug = 1;
+            } else
+            // pysamtts stage-dump flags (see debug.h). Composable: pass several
+            // to emit several sections in one run. Any of them disables audio.
+            if (strcmp(&argv[i][1], "dump-reciter")==0)
+            {
+                dumpstages |= DUMP_RECITER;
+            } else
+            if (strcmp(&argv[i][1], "dump-parser1")==0)
+            {
+                dumpstages |= DUMP_PARSER1;
+            } else
+            if (strcmp(&argv[i][1], "dump-rewrite")==0)
+            {
+                dumpstages |= DUMP_REWRITE;
+            } else
+            if (strcmp(&argv[i][1], "dump-adjust")==0)
+            {
+                dumpstages |= DUMP_ADJUST;
+            } else
+            if (strcmp(&argv[i][1], "dump-final")==0)
+            {
+                dumpstages |= DUMP_FINAL;
+            } else
+            if (strcmp(&argv[i][1], "dump-prepare")==0)
+            {
+                dumpstages |= DUMP_PREPARE;
+            } else
+            if (strcmp(&argv[i][1], "dump-frames")==0)
+            {
+                dumpstages |= DUMP_FRAMES;
+            } else
+            if (strcmp(&argv[i][1], "dump-all")==0)
+            {
+                dumpstages |= DUMP_ALL;
             } else
             if (strcmp(&argv[i][1], "pitch")==0)
             {
@@ -234,15 +282,22 @@ int main(int argc, char **argv)
         if (!TextToPhonemes((unsigned char *)input)) return 1;
         if (debug)
             printf("phonetic input: %s\n", input);
+        if (dumpstages & DUMP_RECITER)
+            DumpReciter(input);
     } else strncat(input, "\x9b", 255);
 
 #ifdef USESDL
-    if ( SDL_Init(SDL_INIT_AUDIO) < 0 )
+    // Skip audio-device setup entirely in stage-dump mode: no playback happens,
+    // and this also avoids needing an audio device on a headless CI machine.
+    if (!dumpstages)
     {
-        printf("Unable to init SDL: %s\n", SDL_GetError());
-        exit(1);
+        if ( SDL_Init(SDL_INIT_AUDIO) < 0 )
+        {
+            printf("Unable to init SDL: %s\n", SDL_GetError());
+            exit(1);
+        }
+        atexit(SDL_Quit);
     }
-    atexit(SDL_Quit);
 #endif
 
     SetInput(input);
@@ -254,7 +309,7 @@ int main(int argc, char **argv)
 
     if (wavfilename != NULL)
         WriteWav(wavfilename, GetBuffer(), GetBufferLength()/50);
-    else
+    else if (!dumpstages)
         OutputSound();
 
 

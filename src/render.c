@@ -7,6 +7,7 @@
 
 #include "debug.h"
 extern int debug;
+extern int dumpstages;
 
 unsigned char wait1 = 7;
 unsigned char wait2 = 6;
@@ -782,6 +783,16 @@ if (debug)
 {
     PrintOutput(sampledConsonantFlag, frequency1, frequency2, frequency3, amplitude1, amplitude2, amplitude3, pitches);
 }
+
+if (dumpstages & DUMP_FRAMES)
+    DumpFrames("frames", sampledConsonantFlag, frequency1, frequency2, frequency3, amplitude1, amplitude2, amplitude3, pitches);
+
+// pysamtts stage-dump mode stops here: the frame tables are the last thing the
+// fixtures need, and skipping ProcessFrames means no buffer is filled and no
+// (blocking) audio is ever played. e2e PCM golds are captured separately via
+// a plain -wav run with no -dump-* flags.
+if (dumpstages)
+    return;
 
 // PROCESS THE FRAMES
 //

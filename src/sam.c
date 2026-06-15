@@ -15,6 +15,7 @@ unsigned char throat = 128;
 int singmode = 0;
 
 extern int debug;
+extern int dumpstages;
 
 unsigned char mem39;
 unsigned char mem44;
@@ -143,10 +144,16 @@ int SAMMain()
     if (!Parser1()) return 0;
     if (debug)
         PrintPhonemes(phonemeindex, phonemeLength, stress);
+    if (dumpstages & DUMP_PARSER1)
+        DumpPhonemeList("parser1", phonemeindex, phonemeLength, stress, 256);
     Parser2();
     CopyStress();
     SetPhonemeLength();
+    if (dumpstages & DUMP_REWRITE)
+        DumpPhonemeList("rewrite", phonemeindex, phonemeLength, stress, 256);
     AdjustLengths();
+    if (dumpstages & DUMP_ADJUST)
+        DumpPhonemeList("adjust", phonemeindex, phonemeLength, stress, 256);
     Code41240();
     do
     {
@@ -167,6 +174,8 @@ int SAMMain()
     {
         PrintPhonemes(phonemeindex, phonemeLength, stress);
     }
+    if (dumpstages & DUMP_FINAL)
+        DumpPhonemeList("final", phonemeindex, phonemeLength, stress, 256);
 
     PrepareOutput();
 
@@ -189,6 +198,8 @@ void PrepareOutput()
         {
             A = 255;
             phonemeIndexOutput[Y] = 255;
+            if (dumpstages & DUMP_PREPARE)
+                DumpPhonemeList("prepare", phonemeIndexOutput, phonemeLengthOutput, stressOutput, 60);
             Render();
             return;
         }
@@ -198,6 +209,8 @@ void PrepareOutput()
             int temp = X;
             //mem[48546] = X;
             phonemeIndexOutput[Y] = 255;
+            if (dumpstages & DUMP_PREPARE)
+                DumpPhonemeList("prepare", phonemeIndexOutput, phonemeLengthOutput, stressOutput, 60);
             Render();
             //X = mem[48546];
             X=temp;
