@@ -1,11 +1,16 @@
-SAM
-===
+# SAM
 
 Software Automatic Mouth - Tiny Speech Synthesizer 
 
+## Fork changes at a glance
 
-What is SAM?
-============
+This repo is a fork of https://github.com/s-macke/SAM. For convenience a non-exhaustive summary of diffs is listed here:
+- [Create unified Windows/Linux build toolchain with cmake](https://github.com/aliciusschroeder/SAM-TTS/pull/6)
+- Code cleanups: [#4](https://github.com/aliciusschroeder/SAM-TTS/pull/4), [#5](https://github.com/aliciusschroeder/SAM-TTS/pull/5)
+- Typo fixes: [#2](https://github.com/aliciusschroeder/SAM-TTS/pull/2), [#3](https://github.com/aliciusschroeder/SAM-TTS/pull/3)
+
+
+## What is SAM?
 
 Sam is a very small Text-To-Speech (TTS) program written in C, that runs on most popular platforms.
 It is an adaption to C of the speech software SAM (Software Automatic Mouth) for the Commodore C64 published 
@@ -19,23 +24,36 @@ Take a look at https://github.com/vidarh/SAM for a more refactored and cleaner v
 
 ## Build
 
-0. Configure `vcpkg`
+0. Prerequisites
 
 ```bash
 # Execute this anywhere you want vcpkg set up
 git clone https://github.com/microsoft/vcpkg
-bootstrap-vcpkg.sh # Windows: .\vcpkg\bootstrap-vcpkg.bat
+./vcpkg/bootstrap-vcpkg.sh # Windows: .\vcpkg\bootstrap-vcpkg.bat
 export VCPKG_ROOT=/path/to/vcpgkg # Windows: $env:VCPKG_ROOT = "$PWD\vcpkg"
 # To persist VCPKG_ROOT, add export to user profile on Linux / set env variable via settings on Windows respectively
+
+# On Linux:
+sudo apt install autoconf autoconf-archive automake libtool
 ```
 
 1. Build using `cmake`
 
 ```bash
-cmake --preset windows
-cmake --build --preset windows
+cmake --preset {windows|linux}
+cmake --build --preset {windows|linux}
 ```
 
+## Usage
+
+```bash
+./sam I am Sam # Output via SDL
+./sam -wav i_am_sam.wav I am Sam # Output to wav file
+```
+
+### Customize sound
+
+You can try other options like
 	-pitch number
 	-speed number
 	-throat number
@@ -52,23 +70,14 @@ Some typical values written in the original manual are:
 	SAM                   72        64        128       128
 
 
-It can even sing
-look at the file "sing"
-for a small example.
-
-For the phoneme input table look in the Wiki.
-
-
-A description of additional features can be found in the original manual at
-	http://www.retrobits.net/atari/sam.shtml
-or in the manual of the equivalent Apple II program
+A description of additional features can be found in the manual of the equivalent Apple II program
 	http://www.apple-iigs.info/newdoc/sam.pdf
 
 
 Adaption To C
 =============
 
-This program (disassembly at http://hitmen.c02.at/html/tools_sam.html) was converted semi-automatic into C by converting each assembler opcode.
+This program (disassembly at http://hitmen.c02.at/html/tools_sam.html) was converted semi-automatic by [Sebastian Macke](https://github.com/s-macke) into C by converting each assembler opcode.
 e. g. 
 
 	lda 56		=>	A = mem[56];
@@ -77,25 +86,16 @@ e. g.
 	.			.
 	.			.
 
-Then it was manually rewritten to remove most of the 
-jumps and register variables in the code and rename the variables to proper names. 
-Most of the description below is a result of this rewriting process.
-
-Unfortunately it is still unreadable. But you should see from where I started :)
+Then it was manually rewritten to remove most of the jumps and register variables in the code and rename the variables to proper names. Most of the explanation below is a result of this rewriting process. Unfortunately it is still unreadable. But you should see from where I started :)
 
 
-Short description
-=================
+## Short explanation
 
-First of all I will limit myself here to a very coarse description. 
-There are very many exceptions defined in the source code that I will not explain. 
-Also a lot of code is unknown for me e. g. Code47503. 
-For a complete understanding of the code I need more time and especially more eyes have a look on the code. 
+First of all I will limit myself here to a very coarse description. There are very many exceptions defined in the source code that I will not explain. Also a lot of code is unknown for me e. g. Code47503. For a complete understanding of the code I need more time and especially more eyes have a look on the code. 
 
-Reciter
--------
+### Reciter
 
-It changes the english text to phonemes by a ruleset shown in the wiki.
+It changes the english text to phonemes by a ruleset.
 
 The rule
 	" ANT(I)",	"AY",
@@ -114,8 +114,7 @@ which can mean e. g. that there must be a vocal or a consonant or something else
 With the -debug option you will get the corresponding rules and the resulting phonemes.
 
 
-Output
-------
+#### Output
 
 Here is the full tree of subroutine calls:
 
@@ -154,7 +153,6 @@ Code41240 adds some additional phonemes
 Code48431 has some extra rules
 
 
-The wiki shows all possible phonemes and some flag fields.  
 The final content of these tables can be seen with the -debug command.
 
 
@@ -164,8 +162,7 @@ In the function PrepareOutput() these tables are partly copied into the small ta
 	phonemelengthOutput[]
 for output.
 
-Final Output
-------------
+#### Final Output
 
 Except of some special phonemes the output is build by a linear combination:
 	
@@ -222,25 +219,10 @@ It only consist of 26 commands:
 The rest is handled in a special way. At the moment I cannot figure out in which way. 
 But it seems that it uses some noise (e. g. for "s") using a table with random values. 
 
-License
-=======
+## License
 
-The software is a reverse-engineered version of a software 
-published more than 34 years ago by "Don't ask Software".
+The software is a reverse-engineered version of a software published more than 34 years ago by "Don't ask Software".
 
-The company no longer exists. Any attempt to contact the original
-authors failed. Hence S.A.M. can be best described as Abandonware
-(http://en.wikipedia.org/wiki/Abandonware)
+The company no longer exists. Any attempt to contact the original authors failed. Hence S.A.M. can be best described as [Abandonware](http://en.wikipedia.org/wiki/Abandonware)
 
-As long this is the case I cannot put my code under any specific open
-source software license. However the software might be used under the
-"Fair Use" act (https://en.wikipedia.org/wiki/FAIR_USE_Act) in the USA.
-
-Contact
-=======
-
-If you have questions don' t hesitate to ask me.
-If you discovered some new knowledge about the code please mail me.
-
-Sebastian Macke
-Email: sebastian@macke.de
+As long this is the case I cannot put my code under any specific open source software license. However the software might be used under the ["Fair Use" act](https://en.wikipedia.org/wiki/FAIR_USE_Act) in the USA.
