@@ -237,12 +237,18 @@ int main(int argc, char **argv)
     } else strncat(input, "\x9b", 255);
 
 #ifdef USESDL
-    if ( SDL_Init(SDL_INIT_AUDIO) < 0 )
+    // Only spin up SDL's audio subsystem when we actually play sound live.
+    // Writing a WAV file needs no audio device, so initializing here would
+    // needlessly fail on headless setups (e.g. WSL2 with no DSP device).
+    if (wavfilename == NULL)
     {
-        printf("Unable to init SDL: %s\n", SDL_GetError());
-        exit(1);
+        if ( SDL_Init(SDL_INIT_AUDIO) < 0 )
+        {
+            printf("Unable to init SDL: %s\n", SDL_GetError());
+            exit(1);
+        }
+        atexit(SDL_Quit);
     }
-    atexit(SDL_Quit);
 #endif
 
     SetInput(input);
