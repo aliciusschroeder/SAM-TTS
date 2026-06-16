@@ -2,6 +2,16 @@
   "name": "sam",
   "version": "0.1.0",
   "dependencies": [
-    "sdl2"
+    {
+      "name": "sdl2",
+      "features": [
+        "alsa"
+      ],
+      "platform": "linux"
+    },
+    {
+      "name": "sdl2",
+      "platform": "!linux"
+    }
   ]
 }
